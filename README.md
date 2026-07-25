@@ -89,7 +89,7 @@ start ZewpolOS_web_7.html
 ### 📂 Project Structure
 
 ```text
-ZTK-3.0-and-ZewpolOS7_web_download/
+Zbundle_2026_v2.4/
 ├── ztk_bootloader.c    
 └── README.md
 └── ZewpolOS_web_7.html
