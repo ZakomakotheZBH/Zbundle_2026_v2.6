@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zbundle 2026 · OS Booklet</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0c0f1a;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+      color: #eef5ff;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .book {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(18, 26, 42, 0.85);
+      backdrop-filter: blur(6px);
+      border-radius: 48px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.05);
+      border: 1px solid rgba(0, 242, 96, 0.15);
+    }
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00f260, #0575e6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.5rem;
+    }
+    .subhead {
+      color: #7a9bcb;
+      font-size: 1.1rem;
+      border-left: 4px solid #00f260;
+      padding-left: 1.2rem;
+      margin-bottom: 2.5rem;
+      opacity: 0.8;
+    }
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 2rem;
+      background: rgba(0, 242, 96, 0.04);
+      border-radius: 60px;
+      padding: 1.2rem 2rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid rgba(0, 242, 96, 0.08);
+    }
+    .toc a {
+      color: #b8d4ff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: 0.2s;
+      border-bottom: 2px solid transparent;
+      padding-bottom: 4px;
+    }
+    .toc a:hover {
+      color: #00f260;
+      border-bottom-color: #00f260;
+    }
+    .section {
+      margin-bottom: 3.5rem;
+      scroll-margin-top: 1rem;
+    }
+    .section h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #d0e6ff;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      border-bottom: 2px solid rgba(0, 242, 96, 0.2);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.8rem;
+    }
+    .section h2 i {
+      color: #00f260;
+      font-size: 2rem;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.8rem;
+    }
+    .os-card {
+      background: rgba(8, 16, 32, 0.7);
+      border-radius: 28px;
+      padding: 1.8rem 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      transition: 0.25s ease;
+    }
+    .os-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0, 242, 96, 0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .os-card .badge {
+      display: inline-block;
+      background: #00f26022;
+      color: #7ddfb0;
+      border: 1px solid #00f26044;
+      border-radius: 40px;
+      padding: 0.2rem 1rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+    .os-card h3 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #e0f0ff;
+      margin-bottom: 0.4rem;
+    }
+    .os-card .version {
+      color: #6d8bb0;
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+    .os-card p {
+      color: #b8ccf0;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      margin: 0.6rem 0;
+    }
+    .os-card .feature-list {
+      list-style: none;
+      margin: 0.8rem 0 0.4rem;
+    }
+    .os-card .feature-list li {
+      padding: 0.2rem 0;
+      color: #b0c8e8;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .os-card .feature-list li::before {
+      content: "▹";
+      color: #00f260;
+      font-weight: bold;
+    }
+    .code-block {
+      background: #0a0e1a;
+      border-radius: 18px;
+      padding: 1.2rem 1.6rem;
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.85rem;
+      border: 1px solid #1e2a44;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #c8dfff;
+      margin: 1rem 0;
+    }
+    .code-block .comment { color: #4a7a5a; }
+    .code-block .cmd { color: #7fc1ff; }
+    .code-block .str { color: #b5d99c; }
+    .glow-text {
+      color: #00f260;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      margin: 2rem 0;
+    }
+    .footer-note {
+      text-align: center;
+      color: #4a6a8a;
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255,255,255,0.03);
+      padding-top: 2rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 600px) {
+      .book { padding: 1.5rem; }
+      h1 { font-size: 2.4rem; }
+      .section h2 { font-size: 1.8rem; }
+      .toc { flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+    }
+  </style>
+  <!-- Font Awesome (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Font for code -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="book" id="top">
+
+  <h1>📖 Zbundle 2026 · OS Booklet</h1>
+  <div class="subhead">Complete instruction manual · v2.4 · Enterprise & Web Editions</div>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <a href="#intro">Introduction</a>
+    <a href="#ztk">ZTK Business</a>
+    <a href="#zewpol7">ZewpolOS 7 web</a>
+    <a href="#ztv">ZOS StreamOS 4.3</a>
+    <a href="#micro">ZewpolOS micro</a>
+    <a href="#quick">Quick Start</a>
+    <a href="#faq">FAQ & Tips</a>
+  </div>
+
+  <!-- ========== INTRODUCTION ========== -->
+  <div class="section" id="intro">
+    <h2><i class="fas fa-compass"></i> Welcome to the Zbundle</h2>
+    <p style="font-size:1.15rem; max-width: 800px; margin-bottom: 1.2rem; color: #c8dfff;">
+      This digital booklet is your official guide to the <strong>Zbundle 2026 v2.4</strong> — 
+      a collection of operating systems and shells ranging from the enterprise-grade ZTK shell 
+      to the sleek ZewpolOS web terminal and the TV‑first ZOS StreamOS.
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: 1.2rem; background: rgba(0,242,96,0.03); border-radius: 28px; padding: 1.2rem 1.8rem; border: 1px solid rgba(0,242,96,0.08);">
+      <span><i class="fas fa-microchip" style="color:#00f260;"></i> 5 OS environments</span>
+      <span><i class="fas fa-terminal" style="color:#00f260;"></i> ISO C11 + web</span>
+      <span><i class="fas fa-brain" style="color:#00f260;"></i> DeepSeek AI ready</span>
+      <span><i class="fas fa-gamepad" style="color:#00f260;"></i> Built‑in games & apps</span>
+      <span><i class="fas fa-ticket-alt" style="color:#00f260;"></i> ZOS Tickets system</span>
+    </div>
+  </div>
+
+  <!-- ========== ZTK BUSINESS ========== -->
+  <div class="section" id="ztk">
+    <h2><i class="fas fa-terminal"></i> ZTK Business Edition v3.0</h2>
+    <div class="card-grid">
+      <div class="os-card">
+        <span class="badge">Enterprise · Ultimate</span>
+        <h3>ZTK Shell</h3>
+        <div class="version">v3.0.0 · Codename Phoenix</div>
+        <p>ISO C11 compliant, multi‑threaded TUI operating layer with DeepSeek AI, text games, disk management, and a full plugin system.</p>
+        <ul class="feature-list">
+          <li>🤖 ZewAI Bot (DeepSeek API)</li>
+          <li>🎮 Snake, Tetris, Pong, Space Invaders</li>
+          <li>🌐 Terminal browser (text‑mode)</li>
+          <li>💾 Mount / format / partition</li>
+          <li>⚙️ Self‑modifying code</li>
+          <li>📦 Plugin & container support</li>
+        </ul>
+      </div>
+      <div class="os-card" style="background: rgba(0, 30, 60, 0.5);">
+        <span class="badge">Compilation</span>
+        <h4 style="color:#7fc1ff; margin:0 0 0.6rem 0;">Linux / macOS</h4>
+        <div class="code-block">
+          <span class="comment"># install ncurses (Debian/Ubuntu)</span>
+          sudo apt install libncurses5-dev libncursesw5-dev
+          <span class="comment"># compile</span>
+          gcc -std=c11 -Wall -Wextra -o ztk ztk_bootloader.c -lpthread -lncurses
+          <span class="comment"># run with AI token</span>
+          ./ztk --ai-token YOUR_DEEPSEEK_TOKEN
+        </div>
+        <h4 style="color:#7fc1ff; margin:0.8rem 0 0.4rem 0;">Windows (MinGW)</h4>
+        <div class="code-block">
+          gcc -std=c11 -Wall -Wextra -o ztk.exe ztk_bootloader.c -lpthread
+          ./ztk.exe
+        </div>
+        <p style="font-size:0.85rem; color:#6d8bb0;"><i class="fas fa-info-circle"></i> Requires libcurl, sqlite3, crypt for full features.</p>
+      </div>
+    </div>
+    <div style="background: #0a1424; border-radius: 20px; padding: 1.2rem 1.8rem; margin-top: 1.2rem; border-left: 4px solid #00f260;">
+      <p><strong><i class="fas fa-key"></i> AI Token:</strong> Set your DeepSeek token via <code class="cmd">--ai-token</code> or inside the shell with <code class="cmd">ai init &lt;token&gt;</code>.</p>
+      <p><strong><i class="fas fa-plug"></i> Plugins:</strong> Place <code>.so</code> files in <code>~/.ztk/plugins/</code> and load with <code class="cmd">plugins load &lt;name&gt;</code>.</p>
+    </div>
+  </div>
+
+  <!-- ========== ZEWPOLOS 7 WEB ========== -->
+  <div class="section" id="zewpol7">
+    <h2><i class="fas fa-globe"></i> ZewpolOS 7 · web</h2>
+    <div class="card-grid">
+      <div class="os-card">
+        <span class="badge">Browser · Glassmorphism</span>
+        <h3>ZewpolOS 7</h3>
+        <div class="version">Web Edition</div>
+        <p>Retro‑futuristic web terminal with glassmorphism UI, real‑time telemetry, and a fully functional command shell.</p>
+        <ul class="feature-list">
+          <li>✨ Glassmorphism shell</li>
+          <li>📊 Telemetry panel (CPU, memory)</li>
+          <li>🎮 8 built‑in games</li>
+          <li>🧠 ZewAI chat (DeepSeek)</li>
+          <li>💾 Disk manager (simulated)</li>
+          <li>🌐 Terminal browser</li>
+        </ul>
+      </div>
+      <div class="os-card">
+        <span class="badge">Launch</span>
+        <h4 style="color:#7fc1ff; margin:0 0 0.6rem 0;">Open in browser</h4>
+        <div class="code-block">
+          <span class="comment"># clone or download</span>
+          git clone https://github.com/ZakomakotheZBH/ZTK-3.0-and-ZewpolOS7_web_download/
+          <span class="comment"># open ZewpolOS_web_7.html</span>
+          open ZewpolOS_web_7.html   <span class="comment"># macOS</span>
+          xdg-open ZewpolOS_web_7.html  <span class="comment"># Linux</span>
+          start ZewpolOS_web_7.html    <span class="comment"># Windows</span>
+        </div>
+        <p style="font-size:0.9rem; color:#b0c8e8;"><i class="fas fa-cloud"></i> Host on GitHub Pages / any static host.</p>
+        <p><strong><i class="fas fa-ticket-alt"></i> ZewAI token:</strong> Use <code class="cmd">ai token &lt;key&gt;</code> inside the terminal.</p>
+      </div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; background: #0e1628; border-radius: 20px; padding: 1rem 1.6rem; margin-top: 1rem;">
+      <span><i class="fas fa-gamepad" style="color:#00f260;"></i> games: snake, tetris, pong, invaders, sudoku, 2048, chess, minesweeper</span>
+      <span><i class="fas fa-terminal" style="color:#00f260;"></i> commands: help, about, clear, power, disks, browser, ai</span>
+    </div>
+  </div>
+
+  <!-- ========== ZOS STREAMOS 4.3 (TV) ========== -->
+  <div class="section" id="ztv">
+    <h2><i class="fas fa-tv"></i> ZOS StreamOS 4.3</h2>
+    <div class="card-grid">
+      <div class="os-card">
+        <span class="badge">TV · Next‑Gen Hub</span>
+        <h3>StreamOS 4.3</h3>
+        <div class="version">For TVs & large screens</div>
+        <p>Full‑featured TV operating system with universal player, AirPlay, games, apps, and a ZOS Tickets economy.</p>
+        <ul class="feature-list">
+          <li>📺 Universal stream player (YouTube, MP4)</li>
+          <li>🍎 AirPlay casting (iPad / Apple TV)</li>
+          <li>🎮 Live games: Kahoot!, Blooket, Quizizz</li>
+          <li>🧩 Mini apps: calculator, whiteboard, timer</li>
+          <li>🎫 ZOS Tickets store & user accounts</li>
+          <li>🌐 Broadcast & media library</li>
+        </ul>
+      </div>
+      <div class="os-card">
+        <span class="badge">Open</span>
+        <h4 style="color:#7fc1ff; margin:0 0 0.6rem 0;">ZOS_for_TVs.html</h4>
+        <div class="code-block">
+          <span class="comment"># open directly in any browser</span>
+          file:///path/to/ZOS_for_TVs.html
+          <span class="comment"># or host on any web server</span>
+        </div>
+        <p><strong><i class="fas fa-user"></i> Accounts:</strong> Click the avatar to create users, earn ZOS Tickets, and buy sports teams / show packs.</p>
+        <p><strong><i class="fas fa-airplay"></i> AirPlay:</strong> Use the built‑in test button or mirror your screen.</p>
+      </div>
+    </div>
+    <div style="background: #0f1a2a; border-radius: 16px; padding: 0.8rem 1.4rem; margin-top: 0.8rem;">
+      <p><i class="fas fa-ticket-alt" style="color:gold;"></i> <strong>ZOS Tickets:</strong> Earn tickets by watching shows or via promo codes. Redeem in the store for sports teams, fonts, and premium content.</p>
+    </div>
+  </div>
+
+  <!-- ========== ZEWPOLOS MICRO ========== -->
+  <div class="section" id="micro">
+    <h2><i class="fas fa-microchip"></i> ZewpolOS micro</h2>
+    <div class="card-grid">
+      <div class="os-card">
+        <span class="badge">x86 · 32‑bit</span>
+        <h3>ZewpolOS micro</h3>
+        <div class="version">v1.0 · RAM‑based</div>
+        <p>Minimalist x86 protected‑mode operating system with a built‑in text editor, calculator, Pong, file manager, and a 64KB RAM filesystem.</p>
+        <ul class="feature-list">
+          <li>📁 RAM filesystem (16 files, 64KB)</li>
+          <li>📝 Hex / text editor with navigation</li>
+          <li>🧮 Calculator, Pong, Settings</li>
+          <li>⌨️ Shell with commands: help, list, edit, calc, pong, fm</li>
+          <li>💾 Persistent storage via RAM</li>
+        </ul>
+      </div>
+      <div class="os-card">
+        <span class="badge">Build</span>
+        <h4 style="color:#7fc1ff; margin:0 0 0.6rem 0;">Compile for x86</h4>
+        <div class="code-block">
+          <span class="comment"># compile kernel</span>
+          gcc -m32 -ffreestanding -nostdlib -fno-stack-protector -c ZewpolOS-micro.c -o zewpol.o
+          ld -m elf_i386 -Ttext 0x100000 -nostdlib -o zewpol.elf zewpol.o
+          objcopy -O binary zewpol.elf zewpol.bin
+          <span class="comment"># combine with bootloader (see source)</span>
+        </div>
+        <p style="font-size:0.85rem; color:#6d8bb0;"><i class="fas fa-floppy-disk"></i> Can be booted from floppy or used with QEMU: <code class="cmd">qemu-system-i386 -kernel zewpol.bin</code></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== QUICK START ========== -->
+  <div class="section" id="quick">
+    <h2><i class="fas fa-rocket"></i> Quick Start Guide</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem;">
+      <div style="background: #0c1424; border-radius: 20px; padding: 1.2rem; border: 1px solid #1a2a44;">
+        <h4 style="color:#00f260;">ZTK Shell</h4>
+        <p style="font-size:0.9rem;">Run <code class="cmd">./ztk</code> after compilation. Use <code class="cmd">help</code> for commands.</p>
+      </div>
+      <div style="background: #0c1424; border-radius: 20px; padding: 1.2rem; border: 1px solid #1a2a44;">
+        <h4 style="color:#00f260;">ZewpolOS 7 web</h4>
+        <p style="font-size:0.9rem;">Open <code>ZewpolOS_web_7.html</code>. Try <code class="cmd">games list</code> or <code class="cmd">ai chat</code>.</p>
+      </div>
+      <div style="background: #0c1424; border-radius: 20px; padding: 1.2rem; border: 1px solid #1a2a44;">
+        <h4 style="color:#00f260;">ZOS StreamOS</h4>
+        <p style="font-size:0.9rem;">Open <code>ZOS_for_TVs.html</code>. Click the avatar to set up your account and earn tickets.</p>
+      </div>
+      <div style="background: #0c1424; border-radius: 20px; padding: 1.2rem; border: 1px solid #1a2a44;">
+        <h4 style="color:#00f260;">ZewpolOS micro</h4>
+        <p style="font-size:0.9rem;">Build with the provided commands and boot with QEMU or a real x86 machine.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FAQ & TIPS ========== -->
+  <div class="section" id="faq">
+    <h2><i class="fas fa-circle-question"></i> FAQ & Tips</h2>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div style="background: #0a1422; border-radius: 16px; padding: 1rem 1.4rem;">
+        <p><strong><i class="fas fa-terminal"></i> How do I use the AI in ZTK?</strong><br>
+        Set your DeepSeek token with <code class="cmd">--ai-token TOKEN</code> or inside the shell <code class="cmd">ai init TOKEN</code>. Then use <code class="cmd">ai ask "question"</code> or enter chat mode.</p>
+      </div>
+      <div style="background: #0a1422; border-radius: 16px; padding: 1rem 1.4rem;">
+        <p><strong><i class="fas fa-gamepad"></i> Can I play games in ZewpolOS 7 web?</strong><br>
+        Yes! Type <code class="cmd">games list</code> to see all games, then <code class="cmd">games play &lt;name&gt;</code> to launch.</p>
+      </div>
+      <div style="background: #0a1422; border-radius: 16px; padding: 1rem 1.4rem;">
+        <p><strong><i class="fas fa-ticket-alt"></i> What are ZOS Tickets?</strong><br>
+        ZOS Tickets are the in‑app currency for ZOS StreamOS. Earn them by watching content or using promo codes, then spend them in the store.</p>
+      </div>
+      <div style="background: #0a1422; border-radius: 16px; padding: 1rem 1.4rem;">
+        <p><strong><i class="fas fa-code"></i> Can I modify these OSes?</strong><br>
+        Absolutely. All source code is provided. ZTK is self‑modifying, ZewpolOS 7 web is pure HTML/CSS/JS, and ZewpolOS micro is C.</p>
+      </div>
+      <div style="background: #0a1422; border-radius: 16px; padding: 1rem 1.4rem;">
+        <p><strong><i class="fas fa-plug"></i> How do I install plugins in ZTK?</strong><br>
+        Place <code>.so</code> files in <code>~/.ztk/plugins/</code> and use <code class="cmd">plugins load &lt;filename&gt;</code>.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; color: #4a6a8a; font-size: 0.9rem;">
+    <span><i class="fas fa-book"></i> Zbundle 2026 v2.4 · Booklet v1.0</span>
+    <span><i class="fas fa-license"></i> MIT License · Free to use & modify</span>
+    <span><a href="#top" style="color:#00f260; text-decoration: none;"><i class="fas fa-arrow-up"></i> Back to top</a></span>
+  </div>
+  <div class="footer-note">
+    <i class="fas fa-crown"></i> Built for enthusiasts, developers, and tinkerers. Enjoy the Zbundle!
+  </div>
+
+</div>
+</body>
+</html>
