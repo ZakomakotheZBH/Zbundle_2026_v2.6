@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zewpol Superweb</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, Arial, sans-serif; 
+            background: #1a1a2e; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        #toolbar {
+            background: #16213e;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #0f3460;
+        }
+        #urlbar {
+            flex: 1;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 20px;
+            background: #0f3460;
+            color: white;
+            font-size: 16px;
+            min-width: 150px;
+        }
+        #urlbar::placeholder { color: #8899bb; }
+        #goBtn, #homeBtn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 20px;
+            background: #e94560;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #homeBtn { background: #533483; }
+        #goBtn:hover, #homeBtn:hover { opacity: 0.8; }
+        #frameContainer {
+            flex: 1;
+            background: white;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #status {
+            background: #16213e;
+            color: #8899bb;
+            padding: 4px 12px;
+            font-size: 12px;
+            text-align: center;
+            border-top: 1px solid #0f3460;
+        }
+        @media (max-width: 600px) {
+            #toolbar { flex-direction: column; }
+            #urlbar { width: 100%; }
+            #goBtn, #homeBtn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <input type="text" id="urlbar" placeholder="Enter URL or search..." value="https://zewpol.neocities.org">
+        <button id="goBtn">Go</button>
+        <button id="homeBtn">🏠 Home</button>
+    </div>
+    <div id="frameContainer">
+        <iframe id="browserFrame" src="https://zewpol.neocities.org"></iframe>
+    </div>
+    <div id="status">Zewpol Superweb v1.0 | Default: zewpol.neocities.org</div>
+
+    <script>
+        const frame = document.getElementById('browserFrame');
+        const urlbar = document.getElementById('urlbar');
+        const goBtn = document.getElementById('goBtn');
+        const homeBtn = document.getElementById('homeBtn');
+        const HOME_URL = 'https://zewpol.neocities.org';
+
+        function loadPage(url) {
+            // If it's not a full URL, treat as search
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                // Check if it looks like a domain (contains a dot)
+                if (url.includes('.') && !url.includes(' ')) {
+                    url = 'https://' + url;
+                } else {
+                    // It's a search query - use your default search engine
+                    url = 'https://zewpol.neocities.org/search?q=' + encodeURIComponent(url);
+                }
+            }
+            frame.src = url;
+            urlbar.value = url;
+        }
+
+        goBtn.addEventListener('click', function() {
+            loadPage(urlbar.value);
+        });
+
+        urlbar.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                loadPage(urlbar.value);
+            }
+        });
+
+        homeBtn.addEventListener('click', function() {
+            loadPage(HOME_URL);
+        });
+
+        // Update URL bar when iframe navigates (if same-origin, otherwise just keep it)
+        frame.addEventListener('load', function() {
+            try {
+                const currentUrl = frame.contentWindow.location.href;
+                if (currentUrl !== 'about:blank') {
+                    urlbar.value = currentUrl;
+                }
+            } catch (e) {
+                // Cross-origin: we can't read the URL, that's fine
+            }
+        });
+    </script>
+</body>
+</html>
