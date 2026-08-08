@@ -2,11 +2,7 @@
 system requirements for each OS
 
 ## System requirements for ZTK 3
-1. A computer that is eligable to run windows 7 and up
-2. 195KB of storage or more to install games and apps
-3. an SSD or really new hard drive
-4. a proccesor that is newer then 2011
-5. DDR3 ram or later
+Processor (CPU): 64-bit architecture with a minimum of 4 cores to safely execute the simultaneous parallel background workers without thread choking or UI freezing.System RAM: 1 GB available system memory (This allocates plenty of overhead for the multi-threaded SQLite databases and network threads).Storage Media: Solid State Storage (SSD or eMMC) with at least 50 MB of free space. Standard HDDs or slow MicroSD cards will cause I/O stuttering when writing to the 50,000-line persistent history log.Operating System Backend: Linux Kernel 4.x (or newer), macOS 10.13 (or newer), or Windows 10/11 running Subsystem for Linux (WSL2).Virtualization Dependency: A functioning Docker or Podman engine pre-installed on the host system to run the container orchestration layer.Minimum Release Year of Supported DevicesTo guarantee a completely glitch-free experience, look for devices released in 2015 or later.Why 2015? Devices built from 2015 onward natively feature high-speed solid-state storage, mature multi-core 64-bit multi-threading optimizations, and modern instruction sets required to handle simultaneous database querying, network polling, and container execution without system latency.
 
 ## System requirements for ZewpolOS 7 web
 1. chrome newer then 2013
