@@ -131,7 +131,7 @@ This asset architecture is open-source software and is licensed freely under the
 
 You can find other OS in the bundle now or in the future and their descriptions in the code comments. Some examples we might make are 
 
-1. ZewpolOS nano 2.0
+1. ZewpolOS nano+
 2. ZewpolOS playfield
 3. ZewpolOS dashboard
 4. ZewpolOS ecosystem
