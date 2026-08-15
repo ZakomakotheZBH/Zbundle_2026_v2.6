@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zewpol Servercheck · IP + speed</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, monospace;
+    }
+    body {
+      background: linear-gradient(145deg, #0b0f1c 0%, #1a1f30 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      margin: 0;
+    }
+    .card {
+      max-width: 860px;
+      width: 100%;
+      background: rgba(18, 24, 42, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 3.2rem;
+      padding: 2rem 2.2rem 2.5rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: #eef2fb;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 0.2rem;
+    }
+    h1 {
+      font-weight: 600;
+      font-size: 2.1rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #c0d0ff, #a0b8f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .badge {
+      font-size: 0.75rem;
+      background: #2a3452;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      color: #b4c2e6;
+      letter-spacing: 0.4px;
+      border: 1px solid #3e4a6a;
+      -webkit-text-fill-color: #c8d4f5;
+    }
+    .sub {
+      color: #98a1c2;
+      margin-bottom: 1.8rem;
+      border-left: 3px solid #4a5b82;
+      padding-left: 1rem;
+      font-size: 0.95rem;
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .speed-panel {
+      background: #111a2b;
+      border-radius: 2rem;
+      padding: 1.8rem 1.8rem 1.8rem;
+      margin-bottom: 2.2rem;
+      border: 1px solid #2f3a5a;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .speed-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem 0.5rem;
+    }
+    .metric {
+      background: #1b253d;
+      padding: 0.6rem 1.4rem;
+      border-radius: 3rem;
+      border: 1px solid #33405f;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex: 1 1 auto;
+      min-width: 120px;
+    }
+    .metric span:first-child {
+      color: #8d9cd0;
+      font-weight: 400;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .metric .value {
+      font-weight: 600;
+      font-size: 1.4rem;
+      color: #e2ebff;
+      letter-spacing: -0.2px;
+    }
+    .unit {
+      font-size: 0.8rem;
+      color: #7383b0;
+      margin-left: 2px;
+    }
+    .btn {
+      background: #2b3860;
+      border: none;
+      border-radius: 3rem;
+      padding: 0.7rem 2rem;
+      font-weight: 600;
+      color: #f0f5ff;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid #4a5d88;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      letter-spacing: 0.3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn:hover {
+      background: #3d4f7a;
+      transform: scale(0.97);
+      border-color: #6d83b5;
+    }
+    .btn:active {
+      transform: scale(0.93);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(0.6);
+    }
+    .sites-section {
+      background: #0f1627;
+      border-radius: 1.8rem;
+      padding: 1.3rem 1.8rem 1.8rem;
+      border: 1px solid #2a3553;
+      margin-top: 0.3rem;
+    }
+    .sites-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .sites-header h3 {
+      font-weight: 500;
+      color: #bcc9f0;
+      letter-spacing: 0.3px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .clear-btn {
+      background: transparent;
+      border: 1px solid #3b4a6e;
+      color: #b0c0e8;
+      padding: 0.2rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .clear-btn:hover {
+      background: #293b5a;
+      border-color: #6a7fa8;
+      color: white;
+    }
+    .site-list {
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .site-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.45rem 0.8rem;
+      background: #1b253d;
+      border-radius: 40px;
+      border-left: 3px solid #4e618b;
+      font-size: 0.9rem;
+      color: #d3defa;
+      word-break: break-all;
+    }
+    .site-item .time {
+      color: #7d8fb8;
+      font-size: 0.7rem;
+      background: #242f4a;
+      padding: 0.1rem 0.8rem;
+      border-radius: 30px;
+      white-space: nowrap;
+      margin-left: 0.8rem;
+    }
+    .empty-sites {
+      color: #5f6f97;
+      text-align: center;
+      padding: 1.2rem 0;
+      font-style: italic;
+      font-size: 0.95rem;
+    }
+    .footnote {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: #4c5d84;
+      text-align: right;
+      letter-spacing: 0.3px;
+      border-top: 1px solid #28344f;
+      padding-top: 0.9rem;
+    }
+    .site-list::-webkit-scrollbar {
+      width: 5px;
+    }
+    .site-list::-webkit-scrollbar-track {
+      background: #141e33;
+      border-radius: 20px;
+    }
+    .site-list::-webkit-scrollbar-thumb {
+      background: #3d507a;
+      border-radius: 20px;
+    }
+    .status-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      background: #1f2b45;
+      padding: 0.15rem 0.8rem;
+      border-radius: 30px;
+      color: #a7b8e0;
+    }
+    .ip-line {
+      background: #0d1524;
+      border-radius: 3rem;
+      padding: 0.3rem 1.5rem;
+      margin: 0.8rem 0 0.2rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #293753;
+      font-size: 0.9rem;
+    }
+    .ip-line strong {
+      color: #b0c4f0;
+      font-weight: 400;
+    }
+    .ip-line .ipaddr {
+      font-weight: 600;
+      color: #d6e2ff;
+      letter-spacing: 0.5px;
+      font-family: 'SF Mono', 'Cascadia Code', monospace;
+    }
+    .ip-line .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      background: #3f5a7a;
+      margin-right: 8px;
+    }
+    .ip-line .status-dot.online {
+      background: #6fcf97;
+      box-shadow: 0 0 8px #3f9e6a;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>⚡ Zewpol Servercheck</h1>
+    <span class="badge">● live</span>
+  </div>
+  <div class="sub">
+    <span>📶 real speed · ping + dl/ul</span>
+    <span>🌐 visited sites · IP detection</span>
+  </div>
+
+  <!-- SPEED PANEL -->
+  <div class="speed-panel">
+    <div class="speed-row">
+      <div class="metric"><span>📥 down</span> <span class="value" id="downSpeed">—</span><span class="unit">Mbps</span></div>
+      <div class="metric"><span>📤 up</span> <span class="value" id="upSpeed">—</span><span class="unit">Mbps</span></div>
+      <div class="metric"><span>🕒 ping</span> <span class="value" id="pingValue">—</span><span class="unit">ms</span></div>
+      <button class="btn" id="runSpeedBtn">▶ check</button>
+    </div>
+    <div style="margin-top: 0.8rem; display: flex; justify-content: flex-end; gap: 0.5rem; font-size: 0.8rem; color: #7c8cb5;">
+      <span id="speedStatus" style="background: #1b253d; padding: 0.2rem 1.2rem; border-radius: 30px;">idle</span>
+    </div>
+  </div>
+
+  <!-- IP & SERVER DETECTION -->
+  <div class="ip-line" id="ipDisplay">
+    <span><span class="status-dot" id="ipDot"></span><strong>🌍 public IP</strong></span>
+    <span class="ipaddr" id="ipAddress">fetching …</span>
+    <span style="color:#6f7fa0; font-size:0.8rem;" id="ipLocation">—</span>
+  </div>
+
+  <!-- SITES / visited -->
+  <div class="sites-section">
+    <div class="sites-header">
+      <h3><span>🧭</span> recently visited</h3>
+      <div style="display: flex; gap: 0.8rem; align-items: center;">
+        <span class="status-badge" id="siteCount">0</span>
+        <button class="clear-btn" id="clearSitesBtn">clear</button>
+      </div>
+    </div>
+    <div class="site-list" id="siteListContainer">
+      <div class="empty-sites">⏳ waiting for visits …</div>
+    </div>
+    <div class="footnote">
+      <span>🔍 real IP from ip-api.com · speed measured via download/upload test</span>
+    </div>
+  </div>
+</div>
+<script>
+  (function() {
+    "use strict";
+
+    // ---------- DOM refs ----------
+    const downEl = document.getElementById('downSpeed');
+    const upEl = document.getElementById('upSpeed');
+    const pingEl = document.getElementById('pingValue');
+    const speedStatus = document.getElementById('speedStatus');
+    const runBtn = document.getElementById('runSpeedBtn');
+    const siteList = document.getElementById('siteListContainer');
+    const siteCount = document.getElementById('siteCount');
+    const clearBtn = document.getElementById('clearSitesBtn');
+    const ipAddrEl = document.getElementById('ipAddress');
+    const ipDot = document.getElementById('ipDot');
+    const ipLocation = document.getElementById('ipLocation');
+
+    // ---------- site history ----------
+    let siteHistory = [];
+
+    // ---------- helpers ----------
+    function formatTime(ts) {
+      const d = new Date(ts);
+      return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function renderSites() {
+      siteList.innerHTML = '';
+      if (siteHistory.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-sites';
+        empty.textContent = '🌐 no sites recorded yet';
+        siteList.appendChild(empty);
+        siteCount.textContent = '0';
+        return;
+      }
+      const reversed = [...siteHistory].reverse();
+      for (let entry of reversed) {
+        const item = document.createElement('div');
+        item.className = 'site-item';
+        let displayUrl = entry.url;
+        if (displayUrl.length > 55) displayUrl = displayUrl.substring(0, 50) + '…';
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'time';
+        timeSpan.textContent = formatTime(entry.timestamp);
+        const urlSpan = document.createElement('span');
+        urlSpan.textContent = displayUrl;
+        item.title = entry.url;
+        item.appendChild(urlSpan);
+        item.appendChild(timeSpan);
+        siteList.appendChild(item);
+      }
+      siteCount.textContent = siteHistory.length;
+    }
+
+    function addVisitedSite(url) {
+      if (!url || url === '' || url === 'about:blank' || url.startsWith('chrome:')) return;
+      const now = Date.now();
+      const last = siteHistory.length > 0 ? siteHistory[siteHistory.length - 1] : null;
+      if (last && last.url === url && (now - last.timestamp) < 5000) {
+        last.timestamp = now;
+      } else {
+        siteHistory.push({ url: url, timestamp: now });
+        if (siteHistory.length > 30) siteHistory.shift();
+      }
+      renderSites();
+    }
+
+    // ---------- REAL IP DETECTION ----------
+    async function fetchPublicIP() {
+      try {
+        ipDot.className = 'status-dot';
+        ipAddrEl.textContent = 'fetching …';
+        ipLocation.textContent = '—';
+        const response = await fetch('https://ip-api.com/json/?fields=status,message,country,city,isp,query');
+        if (!response.ok) throw new Error('HTTP error');
+        const data = await response.json();
+        if (data.status === 'success') {
+          ipAddrEl.textContent = data.query || 'unknown';
+          ipDot.className = 'status-dot online';
+          const loc = [data.city, data.country].filter(Boolean).join(', ');
+          ipLocation.textContent = loc || '—';
+          // also log the IP as a "visited" site for transparency
+          addVisitedSite(`IP: ${data.query} (${data.isp || 'server'})`);
+        } else {
+          ipAddrEl.textContent = 'unavailable';
+          ipDot.className = 'status-dot';
+          ipLocation.textContent = '⚠️';
+        }
+      } catch (e) {
+        ipAddrEl.textContent = '⚠️ error';
+        ipDot.className = 'status-dot';
+        ipLocation.textContent = 'offline';
+        console.warn('IP fetch failed', e);
+      }
+    }
+
+    // ---------- REAL SPEED TEST (download & upload via fetch) ----------
+    // We use a 10MB dummy file from a CDN for download, and a small upload echo test.
+    // This is a genuine speed test using network requests.
+    const TEST_FILE_URL = 'https://cdn.jsdelivr.net/npm/random-file-samples@1.0.0/sample-10mb.bin'; // 10MB file
+    const UPLOAD_URL = 'https://httpbin.org/post'; // echo server
+
+    async function runRealSpeedTest() {
+      runBtn.disabled = true;
+      runBtn.textContent = '⏳ measuring';
+      speedStatus.textContent = 'testing ...';
+      speedStatus.style.color = '#b8c8ff';
+
+      downEl.textContent = '…';
+      upEl.textContent = '…';
+      pingEl.textContent = '…';
+
+      // 1. PING via HEAD request (small)
+      const pingStart = performance.now();
+      try {
+        await fetch(TEST_FILE_URL, { method: 'HEAD', cache: 'no-store' });
+        const pingEnd = performance.now();
+        const pingMs = Math.round(pingEnd - pingStart);
+        pingEl.textContent = pingMs;
+      } catch (_) {
+        pingEl.textContent = '—';
+      }
+
+      // 2. DOWNLOAD test (measure speed)
+      let downMbps = 0;
+      try {
+        const dlStart = performance.now();
+        const response = await fetch(TEST_FILE_URL, { cache: 'no-store' });
+        const reader = response.body.getReader();
+        let received = 0;
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          received += value.length;
+        }
+        const dlEnd = performance.now();
+        const durationSec = (dlEnd - dlStart) / 1000;
+        if (durationSec > 0) {
+          // received in bytes -> Megabits (1 byte = 8 bits)
+          const bits = received * 8;
+          downMbps = bits / (durationSec * 1_000_000);
+          downEl.textContent = downMbps.toFixed(1);
+        } else {
+          downEl.textContent = '0.0';
+        }
+      } catch (e) {
+        downEl.textContent = 'err';
+        console.warn('Download test failed', e);
+      }
+
+      // 3. UPLOAD test (send small payload to echo server)
+      let upMbps = 0;
+      try {
+        const payloadSize = 200 * 1024; // 200KB
+        const payload = new Uint8Array(payloadSize);
+        // fill with random data
+        for (let i = 0; i < payloadSize; i++) payload[i] = Math.floor(Math.random() * 256);
+        const upStart = performance.now();
+        const res = await fetch(UPLOAD_URL, {
+          method: 'POST',
+          body: payload,
+          headers: { 'Content-Type': 'application/octet-stream' },
+          cache: 'no-store'
+        });
+        await res.arrayBuffer(); // ensure complete
+        const upEnd = performance.now();
+        const upDurationSec = (upEnd - upStart) / 1000;
+        if (upDurationSec > 0) {
+          const bits = payloadSize * 8;
+          upMbps = bits / (upDurationSec * 1_000_000);
+          upEl.textContent = upMbps.toFixed(1);
+        } else {
+          upEl.textContent = '0.0';
+        }
+      } catch (e) {
+        upEl.textContent = 'err';
+        console.warn('Upload test failed', e);
+      }
+
+      // if both failed, show error
+      if (downMbps === 0 && upMbps === 0) {
+        speedStatus.textContent = '⚠️ network error';
+        speedStatus.style.color = '#f7a58f';
+      } else {
+        speedStatus.textContent = '✔ done';
+        speedStatus.style.color = '#a6e0b0';
+      }
+      runBtn.disabled = false;
+      runBtn.textContent = '▶ check';
+      // log speed test as a "visited" event
+      addVisitedSite(`⚡ speedtest: ↓${downMbps.toFixed(1)} ↑${upMbps.toFixed(1)} Mbps`);
+    }
+
+    // ---------- event listeners for site tracking ----------
+    document.addEventListener('click', function(e) {
+      let target = e.target;
+      while (target && target.tagName !== 'A') {
+        target = target.parentElement;
+        if (!target) break;
+      }
+      if (target && target.tagName === 'A') {
+        const href = target.getAttribute('href');
+        if (href && !href.startsWith('#')) {
+          handleNavigation(href);
+        } else if (href && href.startsWith('#')) {
+          const full = window.location.href.split('#')[0] + href;
+          handleNavigation(full);
+        }
+      }
+    });
+
+    function handleNavigation(url) {
+      if (!url) return;
+      if (url.startsWith('javascript:') || url.startsWith('mailto:') || url.startsWith('tel:')) return;
+      let displayUrl = url;
+      try {
+        const base = window.location.origin;
+        const absolute = new URL(url, base);
+        displayUrl = absolute.href;
+      } catch (_) {}
+      addVisitedSite(displayUrl);
+    }
+
+    window.addEventListener('hashchange', function() {
+      handleNavigation(window.location.href);
+    });
+    window.addEventListener('popstate', function() {
+      handleNavigation(window.location.href);
+    });
+
+    setTimeout(() => {
+      const initialUrl = window.location.href;
+      if (initialUrl && !initialUrl.startsWith('about:')) {
+        addVisitedSite(initialUrl);
+      }
+    }, 400);
+
+    let lastUrl = window.location.href;
+    setInterval(() => {
+      const current = window.location.href;
+      if (current !== lastUrl) {
+        lastUrl = current;
+        if (current && !current.startsWith('about:')) {
+          addVisitedSite(current);
+        }
+      }
+    }, 1200);
+
+    // ---------- clear sites ----------
+    clearBtn.addEventListener('click', function() {
+      siteHistory = [];
+      renderSites();
+    });
+
+    // ---------- speed test button ----------
+    runBtn.addEventListener('click', function(e) {
+      runRealSpeedTest();
+    });
+
+    // ---------- fetch IP on load ----------
+    fetchPublicIP();
+    // refresh IP every 60 seconds
+    setInterval(fetchPublicIP, 60000);
+
+    // ---------- initial render & sample data ----------
+    renderSites();
+    setTimeout(() => {
+      if (siteHistory.length === 0) {
+        addVisitedSite('https://zewpol.example/dashboard');
+        setTimeout(() => {
+          addVisitedSite('https://docs.zewpol.io/network');
+        }, 300);
+      }
+    }, 700);
+
+    // expose helper
+    window.__zewpolAddSite = addVisitedSite;
+    console.log('🛸 Zewpol Servercheck · real IP + speed test active');
+  })();
+</script>
+</body>
+</html>
