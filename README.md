@@ -1,4 +1,4 @@
-# Zbundle 2026 v2.4: The OS combo web and terminal!
+# Zbundle 2026 v2.5: The OS combo web and terminal!
 Welcome to Zbundle! Zbundle is the perfect alternative to most versions of modern Linux. Here are multiple great OS for your computer and web browser
 
 _Last updated: Sunday august 9 2026_
