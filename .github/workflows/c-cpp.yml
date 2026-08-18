@@ -1,23 +1,28 @@
-name: C/C++ CI
+name: ZTK Bootloader CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main, develop ]
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Compiler and Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Compile ZTK Bootloader
+        run: gcc ztk_bootloader.c -o ztk_bootloader_bin
+
+      - name: Run Bootloader Tests
+        run: |
+          # Replace this with your actual test runner or test script
+          ./ztk_bootloader_bin --test
