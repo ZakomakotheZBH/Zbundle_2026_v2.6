@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zewpol Cardplay</title>
+  <style>
+    /* ----- Reset & Base ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 30%, #1a2a3a, #0b1219);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 16px;
+    }
+
+    .app-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border-radius: 56px;
+      padding: 28px 32px 38px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      max-width: 1100px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .game-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ----- Top Bar ----- */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 20px;
+      color: #edf2f7;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .brand {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #f6d365, #fda085);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 12px rgba(253, 160, 133, 0.3));
+    }
+
+    .score-box {
+      background: rgba(10, 20, 30, 0.6);
+      backdrop-filter: blur(4px);
+      padding: 10px 28px;
+      border-radius: 100px;
+      border: 1px solid rgba(255, 215, 100, 0.25);
+      box-shadow: 0 0 24px rgba(255, 200, 50, 0.06);
+      font-weight: 600;
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #f8fafc;
+    }
+    .score-box span {
+      color: #fcd34d;
+      margin-left: 6px;
+      min-width: 2.4rem;
+      text-align: center;
+    }
+
+    /* ----- Card Table ----- */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      padding: 8px 0;
+    }
+
+    .card-table {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 600px;
+      padding: 12px 8px;
+      background: rgba(0, 20, 30, 0.25);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(2px);
+      min-height: 380px;
+    }
+
+    .row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 4px 8px;
+      min-height: 110px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.06);
+      transition: background 0.2s;
+    }
+    .row.drag-over {
+      background: rgba(255, 215, 100, 0.08);
+      border-color: rgba(255, 215, 100, 0.3);
+    }
+
+    .row-label {
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      width: 100%;
+      text-align: center;
+      padding: 2px 0 0;
+      font-weight: 300;
+    }
+
+    /* ----- Cards ----- */
+    .card {
+      width: 90px;
+      height: 120px;
+      background: #fcf9f2;
+      border-radius: 16px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 215, 100, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 2.2rem;
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
+      position: relative;
+      flex-shrink: 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      padding: 6px;
+      line-height: 1;
+    }
+
+    .card:active {
+      cursor: grabbing;
+    }
+
+    .card.dragging {
+      opacity: 0.5;
+      transform: scale(0.95);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    .card .suit-top {
+      font-size: 1.2rem;
+      align-self: flex-start;
+      margin-bottom: auto;
+    }
+    .card .rank-center {
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .card .suit-bottom {
+      font-size: 1.2rem;
+      align-self: flex-end;
+      margin-top: auto;
+      transform: rotate(180deg);
+    }
+
+    .card.red {
+      color: #c0392b;
+    }
+    .card.black {
+      color: #1e272e;
+    }
+
+    /* card hover (non-dragging) */
+    .card:not(.dragging):hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(255, 215, 100, 0.2);
+      z-index: 10;
+    }
+
+    /* ----- Buttons & Status ----- */
+    .action-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 24px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: rgba(220, 230, 245, 0.08);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 28px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #f0f4fa;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      text-transform: uppercase;
+      background: rgba(30, 50, 70, 0.5);
+      border-color: rgba(255, 215, 100, 0.2);
+    }
+
+    .btn:hover {
+      background: rgba(255, 215, 100, 0.15);
+      border-color: #f6b868;
+      transform: scale(1.02);
+      box-shadow: 0 0 28px rgba(255, 200, 80, 0.15);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn.reset-btn {
+      background: rgba(200, 70, 70, 0.2);
+      border-color: rgba(255, 120, 120, 0.15);
+    }
+    .btn.reset-btn:hover {
+      background: rgba(200, 70, 70, 0.35);
+      border-color: #ff8a8a;
+    }
+
+    .btn.template-btn {
+      background: rgba(70, 180, 200, 0.15);
+      border-color: rgba(100, 200, 255, 0.2);
+      font-size: 0.8rem;
+      padding: 8px 18px;
+    }
+    .btn.template-btn:hover {
+      background: rgba(70, 180, 200, 0.3);
+      border-color: #6fcbff;
+    }
+
+    .status {
+      color: #d6e3f0;
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 22px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      min-width: 140px;
+      text-align: center;
+    }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      .app-container {
+        padding: 16px 12px 20px;
+        border-radius: 32px;
+      }
+      .card {
+        width: 70px;
+        height: 96px;
+        font-size: 1.6rem;
+      }
+      .card .rank-center {
+        font-size: 2rem;
+      }
+      .card .suit-top,
+      .card .suit-bottom {
+        font-size: 0.9rem;
+      }
+      .row {
+        gap: 8px;
+        min-height: 90px;
+      }
+      .brand {
+        font-size: 1.4rem;
+      }
+      .score-box {
+        font-size: 1.2rem;
+        padding: 6px 16px;
+      }
+      .btn {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .card {
+        width: 56px;
+        height: 78px;
+        font-size: 1.2rem;
+        border-radius: 10px;
+      }
+      .card .rank-center {
+        font-size: 1.6rem;
+      }
+      .card .suit-top,
+      .card .suit-bottom {
+        font-size: 0.7rem;
+      }
+      .row {
+        gap: 5px;
+        min-height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="game-panel">
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <div class="brand">♚ Zewpol Cardplay</div>
+        <div class="score-box">🏆 <span id="scoreDisplay">0</span></div>
+      </div>
+
+      <!-- Card Table -->
+      <div class="table-wrapper">
+        <div class="card-table" id="cardTable">
+          <!-- rows will be rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="action-row">
+        <div class="status" id="statusMsg">Drag cards to rearrange</div>
+        <button class="btn template-btn" id="templateKlondike">♠ Klondike</button>
+        <button class="btn template-btn" id="templateFreeCell">♣ FreeCell</button>
+        <button class="btn reset-btn" id="clearTableBtn">✕ Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ----- Zewpol Cardplay - Freeform card dragging + templates -----
+      const tableEl = document.getElementById('cardTable');
+      const statusMsg = document.getElementById('statusMsg');
+      const scoreSpan = document.getElementById('scoreDisplay');
+
+      // ----- Score (localStorage) -----
+      const STORAGE_KEY = 'zewpol_cardplay_score';
+      let winScore = 0;
+
+      function loadScore() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored !== null) {
+          const parsed = parseInt(stored, 10);
+          if (!isNaN(parsed)) winScore = parsed;
+        }
+        scoreSpan.textContent = winScore;
+      }
+
+      function saveScore() {
+        localStorage.setItem(STORAGE_KEY, String(winScore));
+        scoreSpan.textContent = winScore;
+      }
+
+      // increment when a "win" condition is detected (we'll keep it simple: if all cards are in 4 foundation piles)
+      // but we'll let user define their own win; we'll add a manual win button? 
+      // Instead: auto-detect if all cards are in piles with same suit and ordered A-K (we'll detect later)
+      // For now: manual win via double-click on a card? We'll add a simple "Win" trigger in status.
+
+      // ----- State: rows = array of arrays of card objects -----
+      let rows = [];
+
+      // Card: { rank, suit, id }  rank: 1-13 (Ace=1, King=13), suit: '♠','♥','♦','♣'
+      function createDeck() {
+        const suits = ['♠', '♥', '♦', '♣'];
+        const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        const deck = [];
+        let id = 0;
+        for (const suit of suits) {
+          for (let i = 0; i < 13; i++) {
+            deck.push({
+              id: id++,
+              rank: i + 1,
+              rankLabel: ranks[i],
+              suit: suit,
+              color: (suit === '♥' || suit === '♦') ? 'red' : 'black'
+            });
+          }
+        }
+        return deck;
+      }
+
+      function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      // ----- Templates -----
+      function loadTemplate(type) {
+        const deck = shuffleArray(createDeck());
+        let newRows = [];
+
+        if (type === 'klondike') {
+          // 7 piles: pile i has i+1 cards, top card face up (we just show all)
+          newRows = [];
+          let idx = 0;
+          for (let i = 0; i < 7; i++) {
+            const pile = [];
+            for (let j = 0; j <= i; j++) {
+              pile.push(deck[idx++]);
+            }
+            newRows.push(pile);
+          }
+          // remaining deck as a row
+          const stock = deck.slice(idx);
+          if (stock.length) newRows.push(stock);
+          // add 4 empty foundation rows
+          for (let i = 0; i < 4; i++) newRows.push([]);
+        } else if (type === 'freecell') {
+          // 8 columns, 4 free cells (empty rows), 4 foundations
+          newRows = [];
+          const cols = 8;
+          const perCol = Math.floor(deck.length / cols);
+          let extra = deck.length % cols;
+          let idx2 = 0;
+          for (let i = 0; i < cols; i++) {
+            const count = perCol + (i < extra ? 1 : 0);
+            const pile = [];
+            for (let j = 0; j < count; j++) {
+              pile.push(deck[idx2++]);
+            }
+            newRows.push(pile);
+          }
+          // 4 free cells (empty rows)
+          for (let i = 0; i < 4; i++) newRows.push([]);
+          // 4 foundation piles
+          for (let i = 0; i < 4; i++) newRows.push([]);
+        } else {
+          // default: 7 rows with some cards
+          newRows = [];
+          let idx3 = 0;
+          for (let i = 0; i < 7; i++) {
+            const pile = [];
+            const count = Math.min(5 + i, 8);
+            for (let j = 0; j < count && idx3 < deck.length; j++) {
+              pile.push(deck[idx3++]);
+            }
+            newRows.push(pile);
+          }
+          if (idx3 < deck.length) newRows.push(deck.slice(idx3));
+        }
+
+        rows = newRows;
+        render();
+        statusMsg.textContent = `📋 ${type} template loaded · drag cards to rearrange`;
+      }
+
+      // ----- Render -----
+      function render() {
+        tableEl.innerHTML = '';
+        rows.forEach((row, rowIdx) => {
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'row';
+          rowDiv.dataset.row = rowIdx;
+
+          // row label
+          const label = document.createElement('div');
+          label.className = 'row-label';
+          label.textContent = `row ${rowIdx + 1} (${row.length})`;
+          rowDiv.appendChild(label);
+
+          row.forEach((card, cardIdx) => {
+            const cardEl = document.createElement('div');
+            cardEl.className = `card ${card.color}`;
+            cardEl.draggable = true;
+            cardEl.dataset.row = rowIdx;
+            cardEl.dataset.card = cardIdx;
+            cardEl.dataset.id = card.id;
+
+            // card content
+            const suitTop = document.createElement('span');
+            suitTop.className = 'suit-top';
+            suitTop.textContent = card.suit;
+            const rankCenter = document.createElement('span');
+            rankCenter.className = 'rank-center';
+            rankCenter.textContent = card.rankLabel;
+            const suitBottom = document.createElement('span');
+            suitBottom.className = 'suit-bottom';
+            suitBottom.textContent = card.suit;
+
+            cardEl.appendChild(suitTop);
+            cardEl.appendChild(rankCenter);
+            cardEl.appendChild(suitBottom);
+
+            // drag events
+            cardEl.addEventListener('dragstart', handleDragStart);
+            cardEl.addEventListener('dragend', handleDragEnd);
+
+            // double-click to win (quick win trigger for fun)
+            cardEl.addEventListener('dblclick', () => {
+              // if all cards are in rows of same suit in order? we just increment score as a "win"
+              // but we'll do a simple: if you double-click any card, you "win" (for fun)
+              // But we want a real win condition: all cards in 4 piles sorted by suit.
+              // Let's detect:
+              if (checkWinCondition()) {
+                winScore += 1;
+                saveScore();
+                statusMsg.textContent = '🎉 You win! Score +1';
+                // reload a new game after delay
+                setTimeout(() => {
+                  loadTemplate('klondike');
+                }, 1200);
+              } else {
+                statusMsg.textContent = '❌ Not a win yet. Try sorting by suit A→K in 4 piles.';
+              }
+            });
+
+            rowDiv.appendChild(cardEl);
+          });
+
+          // drop target for row
+          rowDiv.addEventListener('dragover', handleDragOver);
+          rowDiv.addEventListener('dragenter', handleDragEnter);
+          rowDiv.addEventListener('dragleave', handleDragLeave);
+          rowDiv.addEventListener('drop', handleDrop);
+
+          tableEl.appendChild(rowDiv);
+        });
+
+        // auto-check win condition after render
+        if (rows.length > 0 && checkWinCondition()) {
+          statusMsg.textContent = '🎉 You win! Score +1 (auto-detected)';
+          winScore += 1;
+          saveScore();
+          setTimeout(() => {
+            loadTemplate('klondike');
+          }, 1500);
+        }
+      }
+
+      // ----- Win condition: all cards in 4 rows, each row has 13 cards of same suit in order A-K -----
+      function checkWinCondition() {
+        // find rows that could be foundations: all cards same suit and ordered
+        const foundations = [];
+        for (const row of rows) {
+          if (row.length === 0) continue;
+          const firstSuit = row[0].suit;
+          let valid = true;
+          for (let i = 0; i < row.length; i++) {
+            if (row[i].suit !== firstSuit) { valid = false; break; }
+            if (row[i].rank !== i + 1) { valid = false; break; }
+          }
+          if (valid && row.length === 13) foundations.push(row);
+        }
+        // need exactly 4 foundation piles of 13 cards each = 52 cards
+        if (foundations.length === 4) {
+          // check total cards
+          let total = 0;
+          for (const row of rows) total += row.length;
+          return total === 52;
+        }
+        return false;
+      }
+
+      // ----- Drag & Drop -----
+      let dragData = null;
+
+      function handleDragStart(e) {
+        const rowIdx = parseInt(e.target.dataset.row);
+        const cardIdx = parseInt(e.target.dataset.card);
+        if (isNaN(rowIdx) || isNaN(cardIdx)) return;
+
+        const card = rows[rowIdx]?.[cardIdx];
+        if (!card) return;
+
+        dragData = { row: rowIdx, cardIdx, card };
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', `${rowIdx},${cardIdx}`);
+        // style
+        e.target.classList.add('dragging');
+        statusMsg.textContent = `Dragging ${card.rankLabel}${card.suit}`;
+      }
+
+      function handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+        // remove drag-over from all rows
+        document.querySelectorAll('.row').forEach(r => r.classList.remove('drag-over'));
+        if (dragData) {
+          statusMsg.textContent = `Dropped ${dragData.card.rankLabel}${dragData.card.suit}`;
+          dragData = null;
+        }
+        // re-check win after drop
+        if (checkWinCondition()) {
+          statusMsg.textContent = '🎉 You win! Score +1';
+          winScore += 1;
+          saveScore();
+          setTimeout(() => {
+            loadTemplate('klondike');
+          }, 1200);
+        }
+      }
+
+      function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      }
+
+      function handleDragEnter(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('drag-over');
+      }
+
+      function handleDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+      }
+
+      function handleDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drag-over');
+
+        const targetRow = parseInt(e.currentTarget.dataset.row);
+        if (isNaN(targetRow)) return;
+
+        // get drag data
+        const raw = e.dataTransfer.getData('text/plain');
+        if (!raw) return;
+        const [srcRow, srcCardIdx] = raw.split(',').map(Number);
+        if (isNaN(srcRow) || isNaN(srcCardIdx)) return;
+
+        // if same row, reorder? we'll just move to end of target row
+        const card = rows[srcRow]?.[srcCardIdx];
+        if (!card) return;
+
+        // remove from source
+        rows[srcRow].splice(srcCardIdx, 1);
+        // if source row becomes empty, keep it (empty row)
+        // add to target row (at end)
+        rows[targetRow].push(card);
+
+        // clean up empty rows? we keep them.
+        render();
+        statusMsg.textContent = `Moved ${card.rankLabel}${card.suit} to row ${targetRow+1}`;
+      }
+
+      // ----- Clear table (start fresh) -----
+      function clearTable() {
+        rows = [];
+        // add 8 empty rows
+        for (let i = 0; i < 8; i++) rows.push([]);
+        render();
+        statusMsg.textContent = 'Table cleared. Drag cards or load a template.';
+      }
+
+      // ----- Init -----
+      loadScore();
+      // load a default template
+      loadTemplate('klondike');
+
+      // ----- Button bindings -----
+      document.getElementById('templateKlondike').addEventListener('click', () => loadTemplate('klondike'));
+      document.getElementById('templateFreeCell').addEventListener('click', () => loadTemplate('freecell'));
+      document.getElementById('clearTableBtn').addEventListener('click', clearTable);
+
+      // Add a manual win trigger via double-click on status (hidden feature)
+      statusMsg.addEventListener('dblclick', () => {
+        if (checkWinCondition()) {
+          winScore += 1;
+          saveScore();
+          statusMsg.textContent = '🏆 Manual win +1';
+          setTimeout(() => loadTemplate('klondike'), 1000);
+        } else {
+          statusMsg.textContent = 'Not a win yet. Sort by suit A→K in 4 piles.';
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
