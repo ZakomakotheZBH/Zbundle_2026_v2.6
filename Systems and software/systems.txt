@@ -4,3 +4,4 @@ ZTK
 ZewpolOS 7 web
 ZOS for TVs
 ZewpolOS nano web
+Zbundle welcome script
