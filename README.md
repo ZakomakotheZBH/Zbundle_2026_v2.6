@@ -90,12 +90,12 @@ start ZewpolOS_web_7.html
 ### 📂 Project Structure
 
 ```text
-Zbundle_2026_v2.4/
-├── ztk_bootloader.c    
-└── README.md
-└── ZewpolOS_web_7.html
-└──ZOS_for_TVs.html
-└── System_requirements.md
+Zbundle_2026_v2./
+├——-.github
+|————Quick start Bundle apps
+|————Systems and software - HERE!
+-ZewpolOS 7 web
+|————system_info
 
 ```
 
