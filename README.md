@@ -90,7 +90,7 @@ start ZewpolOS_web_7.html
 ### 📂 Project Structure
 
 ```text
-Zbundle_2026_v2./
+Zbundle_2026_v2.6/
 ├——-.github
 |————Quick start Bundle apps
 |————Systems and software - HERE!
